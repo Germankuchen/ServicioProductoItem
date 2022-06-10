@@ -12,7 +12,7 @@ import com.ar.gk.model.ItemProducto;
 import com.ar.gk.model.Producto;
 import com.ar.gk.services.ItemService;
 
-@Service
+@Service("serviceFeign")
 @Primary
 public class ItemServicesFeignImpl implements ItemService {
 

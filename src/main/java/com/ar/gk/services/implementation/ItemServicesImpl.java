@@ -13,7 +13,7 @@ import com.ar.gk.model.ItemProducto;
 import com.ar.gk.model.Producto;
 import com.ar.gk.services.ItemService;
 
-@Service
+@Service("serviceRestTemplate")
 public class ItemServicesImpl implements ItemService {
 
 	@Autowired
@@ -21,13 +21,13 @@ public class ItemServicesImpl implements ItemService {
 	
 	@Override
 	public List<ItemProducto> findAll() {
-		List<Producto> productos = Arrays.asList(clienteRest.getForObject("http://localhost:8001/listar", Producto[].class));
+		List<Producto> productos = Arrays.asList(clienteRest.getForObject("http://servicio-productos/listar", Producto[].class));
 		return productos.stream().map(producto -> new ItemProducto(producto, 1)).collect(Collectors.toList());
 	}
 
 	@Override
 	public ItemProducto findByIdCantidad(Long id, Integer cantidad) {
-		Producto producto = clienteRest.getForObject("http://localhost:8001/listar/" + id, Producto.class);
+		Producto producto = clienteRest.getForObject("http://servicio-productos/listar/" + id, Producto.class);
 		return new ItemProducto(producto, cantidad);
 	}
 
