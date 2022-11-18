@@ -17,6 +17,9 @@ import com.ar.gk.model.ItemProducto;
 import com.ar.gk.model.Producto;
 import com.ar.gk.services.ItemService;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
+
 @RestController
 public class ProductoItemController {
 
@@ -45,6 +48,17 @@ public class ProductoItemController {
 	@GetMapping("/listar/{id}/cantidad/{cantidad}")
 	public ItemProducto findById(@PathVariable(name = "id") Long id, @PathVariable(name = "cantidad") Integer cantidad) {
 		return cbFactory.create("items").run(()-> itemServices.findByIdCantidad(id, cantidad), e -> metodoAlternativo(id, cantidad, e));
+	}
+	
+	@GetMapping("/listar2/{id}/cantidad/{cantidad}")
+	@CircuitBreaker(name="items", fallbackMethod = "metodoAlternativo")
+	public ItemProducto findById2(@PathVariable(name = "id") Long id, @PathVariable(name = "cantidad") Integer cantidad) {
+		return itemServices.findByIdCantidad(id, cantidad);
+	}
+	
+	@GetMapping("/listar3/{id}/cantidad/{cantidad}")
+	public ItemProducto findById3(@PathVariable(name = "id") Long id, @PathVariable(name = "cantidad") Integer cantidad) {
+		return itemServices.findByIdCantidad(id, cantidad);
 	}
 	
 	public ItemProducto metodoAlternativo(Long id, Integer cantidad, Throwable e) {
