@@ -1,12 +1,17 @@
 package com.ar.gk.controllers;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -26,6 +31,9 @@ public class ProductoItemController {
 	@Autowired
 	@Qualifier("serviceFeign")
 	private ItemService itemServices;
+	
+	@Value("${configuracion.texto}")
+	private String configuracion;
 	
 	@Autowired
 	private CircuitBreakerFactory cbFactory; 
@@ -59,6 +67,15 @@ public class ProductoItemController {
 	@GetMapping("/listar3/{id}/cantidad/{cantidad}")
 	public ItemProducto findById3(@PathVariable(name = "id") Long id, @PathVariable(name = "cantidad") Integer cantidad) {
 		return itemServices.findByIdCantidad(id, cantidad);
+	}
+	
+	@GetMapping("/configuracion")
+	public ResponseEntity<?> obtenerCantidad(@Value("${server.port}") String puerto) {
+		Map<String, String> configuracion = new TreeMap<>();
+		configuracion.put("texto", this.configuracion);
+		configuracion.put("puerto", puerto);
+		log.info("mostro la configuración");
+		return new ResponseEntity<Map<String, String>>(configuracion, HttpStatus.OK);
 	}
 	
 	public ItemProducto metodoAlternativo(Long id, Integer cantidad, Throwable e) {
